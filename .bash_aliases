@@ -1,5 +1,4 @@
 
-```bash
 # be strict about errors
 set -uo pipefail
 
@@ -79,4 +78,3 @@ echo
 
 # start @ home
 cd ~
-```
