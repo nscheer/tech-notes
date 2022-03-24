@@ -1,0 +1,13 @@
+# This is Git's per-user configuration file.
+[user]
+name = Nicolai Scheer
+email = ...
+
+[core]
+	excludesfile = /home/nscheer/.gitignore
+[diff]
+	colorMoved = zebra
+[fetch]
+	prune = true
+[pull]
+	rebase = true
