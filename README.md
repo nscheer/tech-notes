@@ -5,4 +5,4 @@ Random tech-notes for easy access
  * [tmux](tmux.md)
  * [basic git config](.gitconfig)
  * [basic bash config](.bash_aliases)
- * [settings.json](Windows Terminal settings)
+ * [Windows Terminal settings](settings.json)
