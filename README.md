@@ -6,3 +6,4 @@ Random tech-notes for easy access
  * [basic git config](.gitconfig)
  * [basic bash config](.bash_aliases)
  * [Windows Terminal settings](settings.json)
+ * [PHPStorm on WSL](phpstorm-on-wsl.md)
