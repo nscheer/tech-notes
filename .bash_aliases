@@ -53,22 +53,12 @@ parse_git_branch() {
 }
 
 # simple git prompt
-export PS1="\$(date +%T)\[\033[32m\] \$(parse_git_branch)\[\033[00m\] \w\n$ "
+export PS1="\$(date +%T)\[\033[32m\] \$(parse_git_branch)\[\033[00m\] \w\n\u@\h$ "
 
 # configure x11
 export GDK_SCALE=1
 #export LIBGL_ALWAYS_INDIRECT=1
 export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2; exit;}'):0.0
-
-# run docker
-DOCKER_PID=$(pidof dockerd)
-
-if [ "$DOCKER_PID" == "" ]; then
-	echo "- starting docker"
-	sudo daemonize -v -a -e /var/log/docker.stderr.log -o /var/log/docker.stdout.log -l /var/lock/docker.lock /usr/bin/dockerd
-else
-	echo "- docker is running"
-fi
 
 # add local scripts to path
 export PATH=$PATH:~/bin
