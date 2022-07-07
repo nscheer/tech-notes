@@ -34,11 +34,13 @@ wsl --unregister dev01
 ## Basic installation
 
 ```bash
-# note: AppxBundle needs unpacking to x64 appx first
 # get appx file from
 # https://docs.microsoft.com/en-us/windows/wsl/install-manual
+# we'll use https://aka.ms/wslubuntu2204
 
-# open with e.g. 7-zip and extract appx, and from there the root tar (e.g. install.tar.gz) to e.g. c:\wsl\dev01
+# open app bundle file (Ubuntu2204-220620.AppxBundle) using e.g. 7-zip and extract the correct appx file for your platform (e.g. Ubuntu_2204.0.10.0_x64.appx)
+
+# open appx and extract root file system "install.tar.gz" to location for your wsl instance, e.g. c:\wdsl\dev01
 
 # get launcher from https://github.com/yuk7/wsldl and place beside root tar named as dev01.exe
 
@@ -48,29 +50,98 @@ wsl --unregister dev01
 
 # run distro by running dev01.exe
 
-# create /etc/wsl.conf and restart wsl
+# create /etc/wsl.conf with the following content and restart wsl
 [automount]
 enabled = true
 root = /mnt/
 options = "metadata,umask=002,fmask=011"
 mountFsTab = false
 
+[network]
+hostname = dev01
+
 # add user
-sudo adduser nscheer
+adduser nscheer
 
 # add user to sudo group
-sudo gpasswd -a nscheer sudo
+gpasswd -a nscheer sudo
 
 # switch sudo group to nopasswd (add "NOPASSWD:")
 export EDITOR=nano
 visudo
 # %sudo   ALL=(ALL:ALL) NOPASSWD: ALL
 
-# set startup user id for distro
+# leave wsl and set startup user id for distro
 dev01.exe config --default-user nscheer
 
-# basic stuff 
+# run wsl again, do basic stuff 
+sudo apt update
+sudo apt upgrade
 sudo apt install keychain htop git procps wget curl unzip mlocate
+```
+
+## Docker
+
+```bash
+# install docker: https://docs.docker.com/engine/install/ubuntu/
+sudo apt update
+sudo apt install ca-certificates curl gnupg lsb-release
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt update
+sudo apt install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+# user to docker group
+sudo gpasswd -a nscheer docker
+
+# switch to iptables for docker to be happy
+sudo update-alternatives --set iptables /usr/sbin/iptables-legacy
+sudo update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
+
+# create add /etc/docker/daemon.json with:
+{
+    "log-driver": "json-file",
+    "log-opts":
+    {
+        "max-size": "10m",
+        "max-file": "3"
+    },
+    "log-level": "warning"
+}
+
+# start docker service (add it to your .bash_aliases to do it on "startup")
+sudo service docker start
+```
+
+add to **.bash_aliases**:
+
+```bash
+# run command
+DOCKER_PID=$(pidof dockerd)
+
+if [ "$DOCKER_PID" == "" ]; then
+    echo "- starting docker"
+    sudo daemonize -v -a -e /var/log/docker.stderr.log -o /var/log/docker.stdout.log -l /var/lock/docker.lock /usr/bin/dockerd
+else
+    echo "- docker is running"
+fi
+```
+
+## very simple two line git prompt
+
+add to ***.bash_aliases***:
+
+```bash
+# current git branch in prompt.
+parse_git_branch() {
+   git branch --show-current 2>/dev/null
+}
+
+# simple git prompt
+export PS1="\$(date +%T)\[\033[32m\] \$(parse_git_branch)\[\033[00m\] \w\n\u@\h$ "
 ```
 
 ## ssh-config xdebug
@@ -102,52 +173,6 @@ kc() {
 source $HOME/.keychain/$HOSTNAME-sh
 
 # note: key must have permissions set to 600!
-```
-
-## Docker
-
-```bash
-sudo apt install daemonize
-
-# user to docker group
-gpasswd -a nicolai docker
-
-# install docker:
-https://docs.docker.com/engine/install/debian/
-
-# switch to iptables for docker to be happy
-sudo update-alternatives --set iptables /usr/sbin/iptables-legacy
-sudo update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
-```
-
-add to **.bash_aliases**:
-
-```bash
-# run command
-DOCKER_PID=$(pidof dockerd)
-
-if [ "$DOCKER_PID" == "" ]; then
-    echo "- starting docker"
-    sudo daemonize -v -a -e /var/log/docker.stderr.log -o /var/log/docker.stdout.log -l /var/lock/docker.lock /usr/bin/dockerd
-else
-    echo "- docker is running"
-fi
-```
-
-## git prompt
-
-Very simple git prompt:
-
-add to ***.bash_aliases***:
-
-```bash
-# current git branch in prompt.
-parse_git_branch() {
-   git branch --show-current 2>/dev/null
-}
-
-# simple git prompt
-export PS1="\$(date +%T)\[\033[32m\] \$(parse_git_branch)\[\033[00m\] \w\n$ "
 ```
 
 ## Optimize Disk
