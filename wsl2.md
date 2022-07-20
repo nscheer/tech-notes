@@ -119,20 +119,6 @@ sudo update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
 sudo service docker start
 ```
 
-add to **.bash_aliases**:
-
-```bash
-# run command
-DOCKER_PID=$(pidof dockerd)
-
-if [ "$DOCKER_PID" == "" ]; then
-    echo "- starting docker"
-    sudo daemonize -v -a -e /var/log/docker.stderr.log -o /var/log/docker.stdout.log -l /var/lock/docker.lock /usr/bin/dockerd
-else
-    echo "- docker is running"
-fi
-```
-
 ## very simple two line git prompt
 
 add to ***.bash_aliases***:
