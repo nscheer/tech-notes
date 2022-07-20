@@ -33,24 +33,18 @@ wsl --unregister dev01
 
 ## Basic installation
 
+We will be using Ubuntu 22.04 LTS.
+
+ * get appx file from https://docs.microsoft.com/en-us/windows/wsl/install-manual
+ * open app bundle file (Ubuntu2204-220620.AppxBundle) using e.g. 7-zip and extract the correct appx file for your platform (e.g. Ubuntu_2204.0.10.0_x64.appx)
+ * open appx and extract root file system "install.tar.gz" to location for your wsl instance, e.g. `c:\wdsl\dev01`
+ * get launcher from https://github.com/yuk7/wsldl and place beside root tar named as `dev01.exe`
+ * installation will start and create *ext4.vhdx*, delete install.tar.gz afterwards
+ * run distro by running `dev01.exe`
+
+Create `/etc/wsl.conf` with the following content:
+
 ```bash
-# get appx file from
-# https://docs.microsoft.com/en-us/windows/wsl/install-manual
-# we'll use https://aka.ms/wslubuntu2204
-
-# open app bundle file (Ubuntu2204-220620.AppxBundle) using e.g. 7-zip and extract the correct appx file for your platform (e.g. Ubuntu_2204.0.10.0_x64.appx)
-
-# open appx and extract root file system "install.tar.gz" to location for your wsl instance, e.g. c:\wdsl\dev01
-
-# get launcher from https://github.com/yuk7/wsldl and place beside root tar named as dev01.exe
-
-# run launcher dev01.exe to register distribution (name of exe will be name of distro)
-
-# installation will start and create ext4.vhdx, delete install.tar.gz afterwards
-
-# run distro by running dev01.exe
-
-# create /etc/wsl.conf with the following content and restart wsl
 [automount]
 enabled = true
 root = /mnt/
@@ -59,22 +53,31 @@ mountFsTab = false
 
 [network]
 hostname = dev01
+```
 
-# add user
-adduser nscheer
+Exit WSL and stop the distribution with `wsl -t dev01`, and restart it.
 
-# add user to sudo group
-gpasswd -a nscheer sudo
+Add your user and add it to the sudo group
 
-# switch sudo group to nopasswd (add "NOPASSWD:")
+```bash
+sudo adduser nscheer
+sudo gpasswd -a nscheer sudo
+```
+
+If you like, switch sudo group to not require a password, by adding `NOPASSWD:`
+
+```bash
 export EDITOR=nano
-visudo
+sudo visudo
+# adjust the following line:
 # %sudo   ALL=(ALL:ALL) NOPASSWD: ALL
+```
 
-# leave wsl and set startup user id for distro
-dev01.exe config --default-user nscheer
+Leave WSL again and set startup user using `dev01.exe config --default-user nscheer`
 
-# run wsl again, do basic stuff 
+Run WSL again and do basic stuff...
+
+```bash
 sudo apt update
 sudo apt upgrade
 sudo apt install keychain htop git procps wget curl unzip mlocate
@@ -142,19 +145,6 @@ parse_git_branch() {
 
 # simple git prompt
 export PS1="\$(date +%T)\[\033[32m\] \$(parse_git_branch)\[\033[00m\] \w\n\u@\h$ "
-```
-
-## ssh-config xdebug
-
-add to ***.ssh/config***:
-
-```bash
-Host dev
-    Hostname my-dev-host
-    User nscheer
-    ForwardAgent yes
-    # tunnel for php debugging
-    RemoteForward 9003 localhost:9003
 ```
 
 ## Keychain
