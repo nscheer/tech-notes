@@ -39,7 +39,7 @@ We will be using Ubuntu 22.04 LTS.
  * open app bundle file (Ubuntu2204-220620.AppxBundle) using e.g. 7-zip and extract the correct appx file for your platform (e.g. Ubuntu_2204.0.10.0_x64.appx)
  * open appx and extract root file system "install.tar.gz" to location for your wsl instance, e.g. `c:\wdsl\dev01`
  * get launcher from https://github.com/yuk7/wsldl and place beside root tar named as `dev01.exe`
- * installation will start and create *ext4.vhdx*, delete install.tar.gz afterwards
+ * installation will start and create "ext4.vhdx", delete install.tar.gz afterwards
  * run distro by running `dev01.exe`
 
 Create `/etc/wsl.conf` with the following content:
