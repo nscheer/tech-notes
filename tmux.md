@@ -53,7 +53,7 @@ setw -g window-status-current-style fg=black,bg=$TMUX_FG_COLOR
 
 # bottom status bar
 set -g status-format[1] "#[fill=black,fg=white,bg=black]#[align=left]F5 New | F6 Title | F7/F8 Prev/Next | F9 Kill | F10 Copy"
-set -ag status-format[1] "#[align=right][ #[fg=$TMUX_HOST_COLOR]#H#[fill=black,fg=white,bg=black] ][ %Y-%m-%d %H:%M:%S ][#(uptime | rev | cut -d':' -f1 | rev | sed s/,//g) ]"
+set -ag status-format[1] "#[align=right][ #[fg=$TMUX_HOST_COLOR]#H#[fill=black,fg=white,bg=black] ][ %Y-%m-%d %H:%M:%S ][#(cat /proc/loadavg | cut -c 1-14) ]"
 ```
 
 ## Single-Line Status (for older tmux versions)
@@ -91,7 +91,7 @@ set -g status-interval 1
 set -g status-style fg=$DARK,bg=$BRIGHT
 set -g status-right-length 80
 setw -g window-status-current-style fg=$BRIGHT,bg=$COLOR,bold
-set -g status-right '[ #H ][ %Y-%m-%d %H:%M:%S ][#(uptime | rev | cut -d":" -f1 | rev | sed s/,//g) ]'
+set -g status-right '[ #H ][ %Y-%m-%d %H:%M:%S ][#(cat /proc/loadavg | cut -c 1-14) ]'
 ```
 
 
